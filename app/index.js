@@ -5,16 +5,34 @@ var yeoman = require('yeoman-generator');
 var yosay = require('yosay');
 var chalk = require('chalk');
 
-var appDir = 'app';
-
 
 var ThemosisGenerator = yeoman.generators.Base.extend({
     init: function () {
         this.pkg = require('../package.json');
 
         this.on('end', function () {
+            var self = this;
             if (!this.options['skip-install']) {
-                this.installDependencies();
+                this.installDependencies({
+                    callback: function () {
+                        function performReplacement(regex, replacement, paths, include) {
+                            replace({
+                                regex: regex,
+                                replacement: replacement,
+                                paths: paths,
+                                include: include,
+                                recursive: true,
+                                count: true
+                            });
+                        }
+
+                        var projectDir = process.cwd(),
+                            replace = require('replace');
+
+                        performReplacement(/('local'\s*=>\s')(.*)(')/g, '$1' + self.localHostName + '$3', [projectDir + '/config/environment.php']);
+                        performReplacement(/('DB_NAME'\s*=>\s')(.*)(')/g, '$1' + self.localDbName + '$3', [projectDir + '/.env.local.php']);
+                    }
+                });
             }
         });
     },
