@@ -31,6 +31,19 @@ var ThemosisGenerator = yeoman.generators.Base.extend({
 
                         performReplacement(/('local'\s*=>\s')(.*)(')/g, '$1' + self.localHostName + '$3', [projectDir + '/config/environment.php']);
                         performReplacement(/('DB_NAME'\s*=>\s')(.*)(')/g, '$1' + self.localDbName + '$3', [projectDir + '/.env.local.php']);
+                        performReplacement(/('DB_USER'\s*=>\s')(.*)(')/g, '$1' + self.localDbUsername + '$3', [projectDir + '/.env.local.php']);
+                        performReplacement(/('DB_PASSWORD'\s*=>\s')(.*)(')/g, '$1' + self.localDbPassword + '$3', [projectDir + '/.env.local.php']);
+                        performReplacement(/('WP_HOME'\s*=>\s')(.*)(')/g, '$1' + self.localUrl + '$3', [projectDir + '/.env.local.php']);
+                        performReplacement(/('WP_SITEURL'\s*=>\s')(.*)(')/g, '$1' + self.localUrl + '/cms$3', [projectDir + '/.env.local.php']);
+
+                        if (self.prodDetails) {
+                            performReplacement(/('production'\s*=>\s')(.*)(')/g, '$1' + self.prodHostName + '$3', [projectDir + '/config/environment.php']);
+                            performReplacement(/('DB_NAME'\s*=>\s')(.*)(')/g, '$1' + self.prodDbName + '$3', [projectDir + '/.env.production.php']);
+                            performReplacement(/('DB_USER'\s*=>\s')(.*)(')/g, '$1' + self.prodDbUsername + '$3', [projectDir + '/.env.production.php']);
+                            performReplacement(/('DB_PASSWORD'\s*=>\s')(.*)(')/g, '$1' + self.prodDbPassword + '$3', [projectDir + '/.env.production.php']);
+                            performReplacement(/('WP_HOME'\s*=>\s')(.*)(')/g, '$1' + self.prodUrl + '$3', [projectDir + '/.env.production.php']);
+                            performReplacement(/('WP_SITEURL'\s*=>\s')(.*)(')/g, '$1' + self.prodUrl + '/cms$3', [projectDir + '/.env.production.php']);
+                        }
                     }
                 });
             }
@@ -76,6 +89,55 @@ var ThemosisGenerator = yeoman.generators.Base.extend({
             name: 'localHostName',
             message: 'What is the local hostname?',
             default: 'hel-tofimbp13.local'
+        }, {
+            type: 'confirm',
+            name: 'prodDetails',
+            message: 'Do you know the details for the production environment yet?',
+            default: false
+        }, {
+            type: 'input',
+            name: 'prodDbName',
+            message: 'What is the production database name?',
+            default: function (props) {
+                return self._.slugify(props.siteName);
+            },
+            when: function (props) {
+                return props.prodDetails;
+            }
+        }, {
+            type: 'input',
+            name: 'prodDbUsername',
+            message: 'What is the production database username?',
+            default: 'root',
+            when: function (props) {
+                return props.prodDetails;
+            }
+        }, {
+            type: 'input',
+            name: 'prodDbPassword',
+            message: 'What is the production database password?',
+            default: 'root',
+            when: function (props) {
+                return props.prodDetails;
+            }
+        }, {
+            type: 'input',
+            name: 'prodUrl',
+            message: 'What is the production URL?',
+            default: function (props) {
+                return 'http://' + self._.slugify(props.siteName) + '.com';
+            },
+            when: function (props) {
+                return props.prodDetails;
+            }
+        }, {
+            type: 'input',
+            name: 'prodHostName',
+            message: 'What is the production hostname?',
+            default: 'localhost',
+            when: function (props) {
+                return props.prodDetails;
+            }
         }];
 
         this.prompt(prompts, function (props) {
@@ -85,6 +147,12 @@ var ThemosisGenerator = yeoman.generators.Base.extend({
             this.localDbPassword = props.localDbPassword;
             this.localUrl = props.localUrl;
             this.localHostName = props.localHostName;
+            this.prodDetails = props.prodDetails;
+            this.prodDbName = props.prodDbName;
+            this.prodDbUsername = props.prodDbUsername;
+            this.prodDbPassword = props.prodDbPassword;
+            this.prodUrl = props.prodUrl;
+            this.prodHostName = props.prodHostName;
 
             done();
         }.bind(this));
