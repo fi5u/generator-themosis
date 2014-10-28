@@ -157,13 +157,21 @@ var ThemosisGenerator = yeoman.generators.Base.extend({
             this.prodUrl = props.prodUrl;
             this.prodHostName = props.prodHostName;
 
+            this.wordpress = false;
+            this.verticalRhythm = false;
+            this.ie8 = 'maybe';
+
+
             done();
         }.bind(this));
     },
 
     app: function () {
         this.directory('/Users/fisu/Sites/naked', './');
-        //this.directory('/Users/fisu/Sites/generator-gulp-jack/app/templates/sass', assetsDir + '/sass');
+
+        this.directory('/Users/fisu/Sites/generator-gulp-jack/app/templates/sass/base', assetsDir + '/sass/base');
+        this.directory('/Users/fisu/Sites/generator-gulp-jack/app/templates/sass/project', assetsDir + '/sass/project');
+        this.directory('/Users/fisu/Sites/generator-gulp-jack/app/templates/sass/specifics', assetsDir + '/sass/specifics');
 
         this.copy('_package.json', 'package.json');
         this.copy('_bower.json', 'bower.json');
@@ -178,6 +186,10 @@ var ThemosisGenerator = yeoman.generators.Base.extend({
     writeFilesSass: function () {
         fs.writeFile(assetsDir + '/sass/lib/__lib.scss', '@import "normalize/_normalize.scss";\n@import "susy/_susy.scss";\n@import "bourbon/dist/_bourbon.scss";', function(err) {
             if(err) console.log(err);
+        });
+
+        fs.writeFile(assetsDir + '/sass/style.scss', '/*\nTheme Name: ' + this.siteName + '\nDescription: A theme for ' + this.siteName + '\nAuthor: ' + this.siteName + ' development team\nVersion: 0.0\n*/\n\n@import "base/__base";\n@import "lib/__lib";\n@import "project/__project";\n@import "specifics/__specifics";', function(err) {
+                if(err) console.log(err);
         });
     },
 
