@@ -5,7 +5,8 @@ var yeoman = require('yeoman-generator');
 var yosay = require('yosay');
 var chalk = require('chalk');
 var exec = require('child_process').exec;
-var fs = require('fs-extra');
+var fs = require('fs');
+var fse = require('fs-extra');
 
 var assetsDir = 'htdocs/content/themes/naked-theme/app/assets';
 
@@ -47,6 +48,39 @@ var ThemosisGenerator = yeoman.generators.Base.extend({
                             performReplacement(/('WP_HOME'\s*=>\s')(.*)(')/g, '$1' + self.prodUrl + '$3', [projectDir + '/.env.production.php']);
                             performReplacement(/('WP_SITEURL'\s*=>\s')(.*)(')/g, '$1' + self.prodUrl + '/cms$3', [projectDir + '/.env.production.php']);
                         }
+
+                        fse.copy('/Users/fisu/Sites/generator-gulp-jack/app/templates/sass/base', projectDir + '/' + assetsDir + '/sass/base', function(err) {
+                            if (err) return console.error(err);
+                        });
+
+                        fse.copy('/Users/fisu/Sites/generator-gulp-jack/app/templates/sass/project', projectDir + '/' + assetsDir + '/sass/project', function(err) {
+                            if (err) return console.error(err);
+                        });
+
+                        fse.copy('/Users/fisu/Sites/generator-gulp-jack/app/templates/sass/specifics', projectDir + '/' + assetsDir + '/sass/specifics', function(err) {
+                            if (err) return console.error(err);
+                        });
+                        //self.directory('/Users/fisu/Sites/generator-gulp-jack/app/templates/sass/base', projectDir + '/' + assetsDir + '/sass/base');
+                        //self.directory('/Users/fisu/Sites/generator-gulp-jack/app/templates/sass/project', projectDir + '/' + assetsDir + '/sass/project');
+                        //self.directory('/Users/fisu/Sites/generator-gulp-jack/app/templates/sass/specifics', projectDir + '/' + assetsDir + '/sass/specifics');
+
+                        exec('git clone git://github.com/themosis/framework.git htdocs/content/plugins/themosis-framework');
+
+                        exec('git clone https://github.com/necolas/normalize.css.git ' + projectDir + '/' + assetsDir + '/sass/lib/normalize');
+                        exec('git clone git://github.com/ericam/susy.git ' + projectDir + '/' + assetsDir + '/sass/lib/susy');
+                        exec('git clone https://github.com/thoughtbot/bourbon.git ' + projectDir + '/' + assetsDir + '/sass/lib/bourbon');
+
+                        fse.outputFile(projectDir + '/' + assetsDir + '/sass/lib/__lib.scss', '@import "normalize/_normalize.scss";\n@import "susy/_susy.scss";\n@import "bourbon/dist/_bourbon.scss";', function(err) {
+                            if(err) console.log(err);
+                        });
+
+                        fse.outputFile(projectDir + '/' + assetsDir + '/sass/style.scss', '/*\nTheme Name: ' + self.siteName + '\nDescription: A theme for ' + self.siteName + '\nAuthor: ' + self.siteName + ' development team\nVersion: 0.0\n*/\n\n@import "base/__base";\n@import "lib/__lib";\n@import "project/__project";\n@import "specifics/__specifics";', function(err) {
+                                if(err) console.log(err);
+                        });
+
+                        /*fs.copy('htdocs/content/themes/naked-theme', 'htdocs/content/themes/' + self._.slugify(self.siteName), function(err){
+                            if (err) return console.error(err);
+                        });*/
                     }
                 });
             }
@@ -167,38 +201,14 @@ var ThemosisGenerator = yeoman.generators.Base.extend({
     },
 
     app: function () {
-        var self = this;
-        //this.directory('/Users/fisu/Sites/naked', './');
-        fs.copy('/Users/fisu/Sites/naked', './', function(err){
-            if (err) return console.error(err);
-            fs.copy('htdocs/content/themes/naked-theme', 'htdocs/content/themes/' + self._.slugify(self.siteName), function(err){
-                if (err) return console.error(err);
-                console.log("success!")
-            });
-        });
-
-        this.directory('/Users/fisu/Sites/generator-gulp-jack/app/templates/sass/base', assetsDir + '/sass/base');
-        this.directory('/Users/fisu/Sites/generator-gulp-jack/app/templates/sass/project', assetsDir + '/sass/project');
-        this.directory('/Users/fisu/Sites/generator-gulp-jack/app/templates/sass/specifics', assetsDir + '/sass/specifics');
-
         this.copy('_package.json', 'package.json');
         this.copy('_bower.json', 'bower.json');
 
-        exec('git clone git://github.com/themosis/framework.git htdocs/content/plugins/themosis-framework');
-
-        exec('git clone https://github.com/necolas/normalize.css.git ' + assetsDir + '/sass/lib/normalize');
-        exec('git clone git://github.com/ericam/susy.git ' + assetsDir + '/sass/lib/susy');
-        exec('git clone https://github.com/thoughtbot/bourbon.git ' + assetsDir + '/sass/lib/bourbon');
+        this.directory('/Users/fisu/Sites/naked', './');
     },
 
     writeFilesSass: function () {
-        fs.writeFile(assetsDir + '/sass/lib/__lib.scss', '@import "normalize/_normalize.scss";\n@import "susy/_susy.scss";\n@import "bourbon/dist/_bourbon.scss";', function(err) {
-            if(err) console.log(err);
-        });
 
-        fs.writeFile(assetsDir + '/sass/style.scss', '/*\nTheme Name: ' + this.siteName + '\nDescription: A theme for ' + this.siteName + '\nAuthor: ' + this.siteName + ' development team\nVersion: 0.0\n*/\n\n@import "base/__base";\n@import "lib/__lib";\n@import "project/__project";\n@import "specifics/__specifics";', function(err) {
-                if(err) console.log(err);
-        });
     },
 
     projectfiles: function () {
