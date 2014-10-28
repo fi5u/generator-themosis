@@ -5,7 +5,7 @@ var yeoman = require('yeoman-generator');
 var yosay = require('yosay');
 var chalk = require('chalk');
 var exec = require('child_process').exec;
-var fs = require('fs');
+var fs = require('fs-extra');
 
 var assetsDir = 'htdocs/content/themes/naked-theme/app/assets';
 
@@ -167,7 +167,15 @@ var ThemosisGenerator = yeoman.generators.Base.extend({
     },
 
     app: function () {
-        this.directory('/Users/fisu/Sites/naked', './');
+        var self = this;
+        //this.directory('/Users/fisu/Sites/naked', './');
+        fs.copy('/Users/fisu/Sites/naked', './', function(err){
+            if (err) return console.error(err);
+            fs.copy('htdocs/content/themes/naked-theme', 'htdocs/content/themes/' + self._.slugify(self.siteName), function(err){
+                if (err) return console.error(err);
+                console.log("success!")
+            });
+        });
 
         this.directory('/Users/fisu/Sites/generator-gulp-jack/app/templates/sass/base', assetsDir + '/sass/base');
         this.directory('/Users/fisu/Sites/generator-gulp-jack/app/templates/sass/project', assetsDir + '/sass/project');
