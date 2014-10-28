@@ -29,7 +29,6 @@
   },
   "devDependencies": {
     "mocha": "*",
-    "ncp": "^1.0.1",
     "replace": "^0.3.0"
   },
   "peerDependencies": {
