@@ -4,7 +4,10 @@ var path = require('path');
 var yeoman = require('yeoman-generator');
 var yosay = require('yosay');
 var chalk = require('chalk');
+var exec = require('child_process').exec;
+var fs = require('fs');
 
+var assetsDir = 'htdocs/content/themes/naked-theme/app/assets';
 
 var ThemosisGenerator = yeoman.generators.Base.extend({
     init: function () {
@@ -160,9 +163,22 @@ var ThemosisGenerator = yeoman.generators.Base.extend({
 
     app: function () {
         this.directory('/Users/fisu/Sites/naked', './');
+        //this.directory('/Users/fisu/Sites/generator-gulp-jack/app/templates/sass', assetsDir + '/sass');
 
         this.copy('_package.json', 'package.json');
         this.copy('_bower.json', 'bower.json');
+
+        exec('git clone git://github.com/themosis/framework.git htdocs/content/plugins/themosis-framework');
+
+        exec('git clone https://github.com/necolas/normalize.css.git ' + assetsDir + '/sass/lib/normalize');
+        exec('git clone git://github.com/ericam/susy.git ' + assetsDir + '/sass/lib/susy');
+        exec('git clone https://github.com/thoughtbot/bourbon.git ' + assetsDir + '/sass/lib/bourbon');
+    },
+
+    writeFilesSass: function () {
+        fs.writeFile(assetsDir + '/sass/lib/__lib.scss', '@import "normalize/_normalize.scss";\n@import "susy/_susy.scss";\n@import "bourbon/dist/_bourbon.scss";', function(err) {
+            if(err) console.log(err);
+        });
     },
 
     projectfiles: function () {
