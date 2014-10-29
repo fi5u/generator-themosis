@@ -5,7 +5,6 @@ var yeoman = require('yeoman-generator');
 var yosay = require('yosay');
 var chalk = require('chalk');
 var exec = require('child_process').exec;
-var fs = require('fs');
 var fse = require('fs-extra');
 
 var ThemosisGenerator = yeoman.generators.Base.extend({
@@ -81,8 +80,6 @@ var ThemosisGenerator = yeoman.generators.Base.extend({
                         fse.outputFile(projectDir + '/' + assetsDir + '/sass/style.scss', '/*\nTheme Name: ' + self.siteName + '\nDescription: A theme for ' + self.siteName + '\nAuthor: ' + self.siteName + ' development team\nVersion: 0.0\n*/\n\n@import "base/__base";\n@import "lib/__lib";\n@import "project/__project";\n@import "specifics/__specifics";', function(err) {
                                 if(err) console.log(err);
                         });
-
-
                     }
                 });
             }
@@ -207,10 +204,6 @@ var ThemosisGenerator = yeoman.generators.Base.extend({
         this.copy('_bower.json', 'bower.json');
 
         this.directory('/Users/fisu/Sites/naked', './');
-    },
-
-    writeFilesSass: function () {
-
     },
 
     projectfiles: function () {
