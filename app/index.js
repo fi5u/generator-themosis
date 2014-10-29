@@ -91,7 +91,7 @@ var ThemosisGenerator = yeoman.generators.Base.extend({
                             exec('git clone git://github.com/ericam/susy.git ' + projectDir + '/' + assetsDir + '/sass/lib/susy');
                             exec('git clone https://github.com/thoughtbot/bourbon.git ' + projectDir + '/' + assetsDir + '/sass/lib/bourbon');
 
-                            fse.outputFile(projectDir + '/' + assetsDir + '/sass/lib/__lib.scss', '@import "normalize/_normalize.scss";\n@import "susy/_susy.scss";\n@import "bourbon/dist/_bourbon.scss";', function(err) {
+                            fse.outputFile(projectDir + '/' + assetsDir + '/sass/lib/__lib.scss', '@import "normalize/_normalize.scss";\n@import "susy/sass/_susy.scss";\n@import "bourbon/dist/_bourbon.scss";', function(err) {
                                 if(err) console.log(err);
                             });
 
