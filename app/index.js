@@ -8,14 +8,13 @@ var exec = require('child_process').exec;
 var fs = require('fs');
 var fse = require('fs-extra');
 
-var assetsDir = 'htdocs/content/themes/naked-theme/app/assets';
-
 var ThemosisGenerator = yeoman.generators.Base.extend({
     init: function () {
         this.pkg = require('../package.json');
 
         this.on('end', function () {
-            var self = this;
+            var self = this,
+                assetsDir = 'htdocs/content/themes/' + self._.slugify(self.siteName) + '/app/assets';
             if (!this.options['skip-install']) {
                 this.installDependencies({
                     callback: function () {
@@ -32,6 +31,14 @@ var ThemosisGenerator = yeoman.generators.Base.extend({
 
                         var projectDir = process.cwd(),
                             replace = require('replace');
+
+                        fse.copy('htdocs/content/themes/naked-theme', 'htdocs/content/themes/' + self._.slugify(self.siteName), function(err) {
+                            if (err) return console.error(err);
+
+                            fse.remove('htdocs/content/themes/naked-theme', function(err) {
+                                if (err) return console.error(err);
+                            });
+                        });
 
                         performReplacement(/('local'\s*=>\s')(.*)(')/g, '$1' + self.localHostName + '$3', [projectDir + '/config/environment.php']);
                         performReplacement(/('DB_NAME'\s*=>\s')(.*)(')/g, '$1' + self.localDbName + '$3', [projectDir + '/.env.local.php']);
@@ -60,9 +67,6 @@ var ThemosisGenerator = yeoman.generators.Base.extend({
                         fse.copy('/Users/fisu/Sites/generator-gulp-jack/app/templates/sass/specifics', projectDir + '/' + assetsDir + '/sass/specifics', function(err) {
                             if (err) return console.error(err);
                         });
-                        //self.directory('/Users/fisu/Sites/generator-gulp-jack/app/templates/sass/base', projectDir + '/' + assetsDir + '/sass/base');
-                        //self.directory('/Users/fisu/Sites/generator-gulp-jack/app/templates/sass/project', projectDir + '/' + assetsDir + '/sass/project');
-                        //self.directory('/Users/fisu/Sites/generator-gulp-jack/app/templates/sass/specifics', projectDir + '/' + assetsDir + '/sass/specifics');
 
                         exec('git clone git://github.com/themosis/framework.git htdocs/content/plugins/themosis-framework');
 
@@ -78,9 +82,7 @@ var ThemosisGenerator = yeoman.generators.Base.extend({
                                 if(err) console.log(err);
                         });
 
-                        /*fs.copy('htdocs/content/themes/naked-theme', 'htdocs/content/themes/' + self._.slugify(self.siteName), function(err){
-                            if (err) return console.error(err);
-                        });*/
+
                     }
                 });
             }
