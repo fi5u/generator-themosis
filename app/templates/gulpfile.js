@@ -31,9 +31,9 @@ var paths = {
 };
 
 var spriteConfig = {
-    cssFile: 'sass/project/_sprites.scss',
+    cssFile: '../sass/project/_sprites.scss',
     preview: false,
-    svg: {sprite: 'images/sprite.svg'},
+    svg: {sprite: 'sprite.svg'},
     templates: {
         css: require("fs").readFileSync(paths.assets + '/sass/templates/_sprite-mixin.scss', 'utf-8')
     }

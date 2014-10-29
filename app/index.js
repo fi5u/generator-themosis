@@ -50,35 +50,36 @@ var ThemosisGenerator = yeoman.generators.Base.extend({
                                 performReplacement(/('WP_SITEURL'\s*=>\s')(.*)(')/g, '$1' + self.prodUrl + '/cms$3', [projectDir + '/.env.production.php']);
                             }
 
-                            fse.copy('/Users/fisu/Sites/generator-gulp-jack/app/templates/sass/base', projectDir + '/' + assetsDir + '/sass/base', function(err) {
+                            fse.move(projectDir + '/temp/sass', projectDir + '/' + assetsDir + '/sass', {clobber: true}, function(err) {
                                 if (err) return console.error(err);
-                                fse.move(projectDir + '/temp/_config.scss', projectDir + '/' + assetsDir + '/sass/base/_config.scss', {clobber: true}, function(err) {
+
+                                fse.move(projectDir + '/temp/_sprite-mixin.scss', projectDir + '/' + assetsDir + '/sass/templates/_sprite-mixin.scss', {clobber: true}, function(err) {
                                     if (err) return console.error(err);
 
-                                    fse.move(projectDir + '/temp/_mixins.scss', projectDir + '/' + assetsDir + '/sass/base/utils/_mixins.scss', {clobber: true}, function(err) {
+                                    fse.removeSync('temp', function(err) {
                                         if (err) return console.error(err);
-
-                                        fse.move(projectDir + '/temp/_helpers.scss', projectDir + '/' + assetsDir + '/sass/base/utils/_helpers.scss', {clobber: true}, function(err) {
-                                            if (err) return console.error(err);
-
-                                            fse.removeSync('temp', function(err) {
-                                                if (err) return console.error(err);
-                                            });
-                                        });
                                     });
                                 });
-                            });
 
-                            fse.copy('/Users/fisu/Sites/generator-gulp-jack/app/templates/sass/project', projectDir + '/' + assetsDir + '/sass/project', function(err) {
-                                if (err) return console.error(err);
-                            });
+                                fse.removeSync(projectDir + '/' + assetsDir + '/sass/components', function(err) {
+                                    if (err) return console.error(err);
+                                });
 
-                            fse.copy('/Users/fisu/Sites/generator-gulp-jack/app/templates/sass/specifics', projectDir + '/' + assetsDir + '/sass/specifics', function(err) {
-                                if (err) return console.error(err);
-                            });
+                                fse.removeSync(projectDir + '/' + assetsDir + '/sass/vendor', function(err) {
+                                    if (err) return console.error(err);
+                                });
 
-                            fse.copy('/Users/fisu/Sites/generator-gulp-jack/app/templates/_sprite-mixin.scss', projectDir + '/' + assetsDir + '/sass/templates/_sprite-mixin.scss', function(err) {
-                                if (err) return console.error(err);
+                                fse.removeSync(projectDir + '/' + assetsDir + '/sass/live.scss', function(err) {
+                                    if (err) return console.error(err);
+                                });
+
+                                fse.outputFile(projectDir + '/' + assetsDir + '/sass/lib/__lib.scss', '@import "normalize/_normalize.scss";\n@import "susy/sass/_susy.scss";\n@import "bourbon/dist/_bourbon.scss";', function(err) {
+                                    if(err) console.log(err);
+                                });
+
+                                fse.outputFile(projectDir + '/' + assetsDir + '/sass/style.scss', '/*\nTheme Name: ' + self.siteName + '\nDescription: A theme for ' + self.siteName + '\nAuthor: ' + self.siteName + ' development team\nVersion: 0.0\n*/\n\n@import "base/__base";\n@import "lib/__lib";\n@import "project/__project";\n@import "specifics/__specifics";', function(err) {
+                                        if(err) console.log(err);
+                                });
                             });
 
                             exec('git clone git://github.com/themosis/framework.git htdocs/content/plugins/themosis-framework');
@@ -90,14 +91,6 @@ var ThemosisGenerator = yeoman.generators.Base.extend({
                             });
                             exec('git clone git://github.com/ericam/susy.git ' + projectDir + '/' + assetsDir + '/sass/lib/susy');
                             exec('git clone https://github.com/thoughtbot/bourbon.git ' + projectDir + '/' + assetsDir + '/sass/lib/bourbon');
-
-                            fse.outputFile(projectDir + '/' + assetsDir + '/sass/lib/__lib.scss', '@import "normalize/_normalize.scss";\n@import "susy/sass/_susy.scss";\n@import "bourbon/dist/_bourbon.scss";', function(err) {
-                                if(err) console.log(err);
-                            });
-
-                            fse.outputFile(projectDir + '/' + assetsDir + '/sass/style.scss', '/*\nTheme Name: ' + self.siteName + '\nDescription: A theme for ' + self.siteName + '\nAuthor: ' + self.siteName + ' development team\nVersion: 0.0\n*/\n\n@import "base/__base";\n@import "lib/__lib";\n@import "project/__project";\n@import "specifics/__specifics";', function(err) {
-                                    if(err) console.log(err);
-                            });
 
                             fse.remove('htdocs/content/themes/naked-theme', function(err) {
                                 if (err) return console.error(err);
@@ -226,9 +219,8 @@ var ThemosisGenerator = yeoman.generators.Base.extend({
         this.copy('_package.json', 'package.json');
         this.copy('_bower.json', 'bower.json');
         this.copy('gulpfile.js', 'gulpfile.js');
-        this.copy('/Users/fisu/Sites/generator-gulp-jack/app/templates/sass/base/_config.scss', 'temp/_config.scss');
-        this.copy('/Users/fisu/Sites/generator-gulp-jack/app/templates/sass/base/utils/_mixins.scss', 'temp/_mixins.scss');
-        this.copy('/Users/fisu/Sites/generator-gulp-jack/app/templates/sass/base/utils/_helpers.scss', 'temp/_helpers.scss');
+        this.directory('/Users/fisu/Sites/generator-gulp-jack/app/templates/sass', 'temp/sass');
+        this.copy('/Users/fisu/Sites/generator-gulp-jack/app/templates/_sprite-mixin.scss', 'temp/_sprite-mixin.scss');
 
         this.directory('/Users/fisu/Sites/naked', './');
     },
