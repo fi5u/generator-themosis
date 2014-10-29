@@ -83,7 +83,11 @@ var ThemosisGenerator = yeoman.generators.Base.extend({
 
                             exec('git clone git://github.com/themosis/framework.git htdocs/content/plugins/themosis-framework');
 
-                            exec('git clone https://github.com/necolas/normalize.css.git ' + projectDir + '/' + assetsDir + '/sass/lib/normalize');
+                            exec('git clone https://github.com/necolas/normalize.css.git ' + projectDir + '/' + assetsDir + '/sass/lib/normalize', function() {
+                                fse.move(projectDir + '/' + assetsDir + '/sass/lib/normalize/normalize.css', projectDir + '/' + assetsDir + '/sass/lib/normalize/_normalize.scss', {clobber: true}, function(err) {
+                                    if (err) return console.log(err);
+                                });
+                            });
                             exec('git clone git://github.com/ericam/susy.git ' + projectDir + '/' + assetsDir + '/sass/lib/susy');
                             exec('git clone https://github.com/thoughtbot/bourbon.git ' + projectDir + '/' + assetsDir + '/sass/lib/bourbon');
 
