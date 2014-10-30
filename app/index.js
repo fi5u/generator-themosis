@@ -52,8 +52,14 @@ var ThemosisGenerator = yeoman.generators.Base.extend({
                             fse.copy('/Users/fisu/Sites/naked/htdocs/content/themes/naked-theme', 'themosis/htdocs/content/themes/' + self._.slugify(self.siteName), function(err) {
                                 if (err) console.log(err);
 
+                                performReplacement(/Theme Name: (.*)/g, '$1' + self.siteName, [themosisDir + '/htdocs/content/themes/' + self._.slugify(self.siteName) + '/style.css']);
+                                performReplacement(/(Description: )(.*)( WP theme)/g, '$1' + self.siteName + '$3', [themosisDir + '/htdocs/content/themes/' + self._.slugify(self.siteName) + '/style.css']);
+
                                 fse.move(projectDir + '/temp/sass', projectDir + '/' + assetsDir + '/sass', function(err) {
                                     if (err) return console.error(err);
+
+                                    performReplacement(/(\$live-img-dir: ")(.*)(")/g, '$1../images$3', [projectDir + '/' + assetsDir + '/sass/base/_config.scss']);
+                                    performReplacement(/(\$live-font-dir: ")(.*)(")/g, '$1../fonts$3', [projectDir + '/' + assetsDir + '/sass/base/_config.scss']);
 
                                     fse.move(projectDir + '/temp/_sprite-mixin.scss', projectDir + '/' + assetsDir + '/sass/templates/_sprite-mixin.scss', function(err) {
                                         if (err) return console.error(err);
@@ -84,6 +90,10 @@ var ThemosisGenerator = yeoman.generators.Base.extend({
                                     });
 
                                     fse.removeSync(projectDir + '/' + assetsDir + '/sass/live.scss', function(err) {
+                                        if (err) return console.error(err);
+                                    });
+
+                                    fse.removeSync(projectDir + '/' + assetsDir + '/sass/style.scss', function(err) {
                                         if (err) return console.error(err);
                                     });
 
