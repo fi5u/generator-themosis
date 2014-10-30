@@ -91,7 +91,7 @@ gulp.task('images', ['toPng'], function () {
 
 
 gulp.task('php', function () {
-    return gulp.src(paths.php)
+    gulp.src(paths.php)
         .pipe(refresh(lrserver))
 });
 
