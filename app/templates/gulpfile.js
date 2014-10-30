@@ -14,7 +14,7 @@ var refresh = require('gulp-livereload');
 var embedlr = require('gulp-embedlr');
 var ecstatic = require('ecstatic');
 
-var theme = 'htdocs/content/themes/<%= _.slugify(siteName) %>/app';
+var theme = 'themosis/htdocs/content/themes/<%= _.slugify(siteName) %>/app';
     assets = theme + '/assets';
     toBuild = assets + '/_toBuild';
     livereloadport = 35729,
