@@ -15,27 +15,30 @@ var embedlr = require('gulp-embedlr');
 var ecstatic = require('ecstatic');
 
 var theme = 'htdocs/content/themes/<%= _.slugify(siteName) %>/app';
+    assets = theme + '/assets';
+    toBuild = assets + '/_toBuild';
     livereloadport = 35729,
     serverport = 5001;
 
 var paths = {
     php: theme + '/**/*.php',
-    assets: theme + '/assets',
-    sass: theme + '/assets/sass/**/*.scss',
-    sassDir: theme + '/assets/sass',
-    css: theme + '/assets/css',
-    img: theme + '/assets/images/**/*',
-    imgDir: theme + '/assets/images',
-    sprites: theme + '/assets/images/sprites/*.svg',
-    spritesDir: theme + '/assets/sass/project'
+    assets: assets,
+    sass: toBuild + '/sass/**/*.scss',
+    sassDir: toBuild + '/sass',
+    css: assets + '/css',
+    toBuildImg: toBuild + '/images/**/*',
+    toBuildImgDir: toBuild + '/images',
+    imgDir: assets + '/images',
+    sprites: toBuild + '/images/sprites/*.svg',
+    spritesDir: toBuild + '/sass/project'
 };
 
 var spriteConfig = {
-    cssFile: '../sass/project/_sprites.scss',
+    cssFile: '../_toBuild/sass/project/_sprites.scss',
     preview: false,
     svg: {sprite: 'sprite.svg'},
     templates: {
-        css: require("fs").readFileSync(paths.assets + '/sass/templates/_sprite-mixin.scss', 'utf-8')
+        css: require("fs").readFileSync(paths.sassDir + '/templates/_sprite-mixin.scss', 'utf-8')
     }
 };
 
@@ -69,20 +72,20 @@ gulp.task('sprites', function () {
 
 
 gulp.task('toPng', function () {
-    gulp.src([paths.imgDir + '/**/*.svg', '!' + paths.imgDir + '/svg-sprite.svg', '!' + paths.imgDir + '/sprites/**'])
+    gulp.src([paths.toBuildImgDir + '/**/*.svg', '!' + paths.toBuildImgDir + '/svg-sprite.svg', '!' + paths.toBuildImgDir + '/sprites{,/**}'])
         .pipe(svg2png())
         .pipe(gulp.dest(paths.imgDir));
 });
 
 
 gulp.task('images', ['toPng'], function () {
-    return gulp.src([paths.img, '!' + paths.sprites])
-        .pipe(newer(paths.img))
+    return gulp.src([paths.toBuildImg, '!' + paths.toBuildImgDir + '/sprites{,/**}'])
+        .pipe(newer(paths.imgDir))
         .pipe(imagemin({
             progressive: true,
             interlaced: true
         }))
-        .pipe(gulp.dest(paths.img))
+        .pipe(gulp.dest(paths.imgDir))
         .pipe(refresh(lrserver));
 });
 
@@ -91,6 +94,9 @@ gulp.task('php', function () {
     return gulp.src(paths.php)
         .pipe(refresh(lrserver))
 });
+
+
+gulp.task('clean', require('del').bind(null, [paths.css, paths.imgDir]));
 
 
 gulp.task('serve', function () {
@@ -102,8 +108,8 @@ gulp.task('serve', function () {
 
 gulp.task('watch', function () {
     gulp.watch([paths.sass, '!' + paths.sassDir + '/lib/*/**'], ['sass']);
-    gulp.watch([paths.img, '!' + paths.imgDir + '/sprites{,/**}'], ['images']);
-    gulp.watch(paths.sprites, ['sprites']);
+    gulp.watch([paths.toBuildImg, '!' + paths.toBuildImg + '/sprites{,/**}'], ['images']);
+    gulp.watch(paths.toBuildImgDir + '/sprites{,/**}', ['sprites']);
     gulp.watch(paths.php, ['php']);
 });
 
@@ -127,6 +133,6 @@ gulp.task('server', ['build'], function() {
 });
 
 
-gulp.task('default', function () {
+gulp.task('default', ['clean'], function () {
     gulp.start('server');
 });
