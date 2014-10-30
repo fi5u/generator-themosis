@@ -67,6 +67,14 @@ var ThemosisGenerator = yeoman.generators.Base.extend({
                                         if (err) return console.error(err);
                                     });
 
+                                    fse.copy(projectDir + '/' + assetsDir + '/sass/base', projectDir + '/' + assetsDir + '/sass/back/base', function(err){
+                                        if (err) return console.error(err);
+                                    });
+
+                                    fse.copy(projectDir + '/' + assetsDir + '/sass/specifics', projectDir + '/' + assetsDir + '/sass/back/specifics', function(err){
+                                        if (err) return console.error(err);
+                                    });
+
                                     fse.removeSync(projectDir + '/' + assetsDir + '/sass/components', function(err) {
                                         if (err) return console.error(err);
                                     });
@@ -83,7 +91,11 @@ var ThemosisGenerator = yeoman.generators.Base.extend({
                                         if(err) console.log(err);
                                     });
 
-                                    fse.outputFile(projectDir + '/' + assetsDir + '/sass/style.scss', '/*\nTheme Name: ' + self.siteName + '\nDescription: A theme for ' + self.siteName + '\nAuthor: ' + self.siteName + ' development team\nVersion: 0.0\n*/\n\n@import "base/__base";\n@import "lib/__lib";\n@import "project/__project";\n@import "specifics/__specifics";', function(err) {
+                                    fse.outputFile(projectDir + '/' + assetsDir + '/sass/front.scss', '@import "base/__base";\n@import "lib/__lib";\n@import "project/__project";\n@import "specifics/__specifics";', function(err) {
+                                            if(err) console.log(err);
+                                    });
+
+                                    fse.outputFile(projectDir + '/' + assetsDir + '/sass/back.scss', '@import "back/base/__base";\n@import "back/specifics/__specifics";', function(err) {
                                             if(err) console.log(err);
                                     });
 
