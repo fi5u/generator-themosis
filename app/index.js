@@ -28,6 +28,12 @@ var ThemosisGenerator = yeoman.generators.Base.extend({
                             });
                         }
 
+                        function remove(target) {
+                            fse.removeSync(target, function(err) {
+                                if (err) return console.error(err);
+                            });
+                        }
+
                         var projectDir = process.cwd(),
                             themosisDir = projectDir + '/themosis',
                             replace = require('replace');
@@ -64,9 +70,7 @@ var ThemosisGenerator = yeoman.generators.Base.extend({
                                     fse.move(projectDir + '/temp/_sprite-mixin.scss', projectDir + '/' + assetsDir + '/sass/templates/_sprite-mixin.scss', function(err) {
                                         if (err) return console.error(err);
 
-                                        fse.removeSync('temp', function(err) {
-                                            if (err) return console.error(err);
-                                        });
+                                        remove('temp');
                                     });
 
                                     fse.mkdirs(projectDir + '/' + assetsDir + '/images/sprites', function(err){
@@ -81,21 +85,10 @@ var ThemosisGenerator = yeoman.generators.Base.extend({
                                         if (err) return console.error(err);
                                     });
 
-                                    fse.removeSync(projectDir + '/' + assetsDir + '/sass/components', function(err) {
-                                        if (err) return console.error(err);
-                                    });
-
-                                    fse.removeSync(projectDir + '/' + assetsDir + '/sass/vendor', function(err) {
-                                        if (err) return console.error(err);
-                                    });
-
-                                    fse.removeSync(projectDir + '/' + assetsDir + '/sass/live.scss', function(err) {
-                                        if (err) return console.error(err);
-                                    });
-
-                                    fse.removeSync(projectDir + '/' + assetsDir + '/sass/style.scss', function(err) {
-                                        if (err) return console.error(err);
-                                    });
+                                    remove(projectDir + '/' + assetsDir + '/sass/components');
+                                    remove(projectDir + '/' + assetsDir + '/sass/vendor');
+                                    remove(projectDir + '/' + assetsDir + '/sass/live.scss');
+                                    remove(projectDir + '/' + assetsDir + '/sass/style.scss');
 
                                     fse.outputFile(projectDir + '/' + assetsDir + '/sass/lib/__lib.scss', '@import "normalize/_normalize.scss";\n@import "susy/sass/_susy.scss";\n@import "bourbon/dist/_bourbon.scss";', function(err) {
                                         if(err) console.log(err);
@@ -109,9 +102,7 @@ var ThemosisGenerator = yeoman.generators.Base.extend({
                                             if(err) console.log(err);
                                     });
 
-                                    fse.removeSync('themosis/htdocs/content/themes/themosis-theme', function(err) {
-                                        if (err) return console.error(err);
-                                    });
+                                    remove('themosis/htdocs/content/themes/themosis-theme');
 
                                     exec('git clone https://github.com/necolas/normalize.css.git ' + projectDir + '/' + assetsDir + '/sass/lib/normalize', function() {
                                         fse.move(projectDir + '/' + assetsDir + '/sass/lib/normalize/normalize.css', projectDir + '/' + assetsDir + '/sass/lib/normalize/_normalize.scss', {clobber: true}, function(err) {
