@@ -66,6 +66,8 @@ var ThemosisGenerator = yeoman.generators.Base.extend({
 
                                 performReplacement(/Theme Name: (.*)/g, '$1' + self.siteName, [themosisDir + '/htdocs/content/themes/' + self._.slugify(self.siteName) + '/style.css']);
                                 performReplacement(/(Description: )(.*)( WP theme)/g, '$1' + self.siteName + '$3', [themosisDir + '/htdocs/content/themes/' + self._.slugify(self.siteName) + '/style.css']);
+                                performReplacement(/('textdomain'.*=> ')(.*)(')/g, '$1' + self._.slugify(self.siteName) + '$3', [themosisDir + '/htdocs/content/themes/' + self._.slugify(self.siteName) + '/app/config/application.config.php']);
+                                performReplacement(/('namespace'.*=> ')(.*)(')/g, '$1' + self._.slugify(self.siteName) + '$3', [themosisDir + '/htdocs/content/themes/' + self._.slugify(self.siteName) + '/app/config/application.config.php']);
 
                                 fse.move(projectDir + '/temp/sass', projectDir + '/' + assetsDir + '/sass', function(err) {
                                     if (err) return console.error(err);
