@@ -34,6 +34,12 @@ var ThemosisGenerator = yeoman.generators.Base.extend({
                             });
                         }
 
+                        function writeFile(target, content) {
+                            fse.outputFile(target, content, function(err) {
+                                if(err) console.log(err);
+                            });
+                        }
+
                         var projectDir = process.cwd(),
                             themosisDir = projectDir + '/themosis',
                             replace = require('replace');
@@ -69,7 +75,6 @@ var ThemosisGenerator = yeoman.generators.Base.extend({
 
                                     fse.move(projectDir + '/temp/_sprite-mixin.scss', projectDir + '/' + assetsDir + '/sass/templates/_sprite-mixin.scss', function(err) {
                                         if (err) return console.error(err);
-
                                         remove('temp');
                                     });
 
@@ -90,17 +95,9 @@ var ThemosisGenerator = yeoman.generators.Base.extend({
                                     remove(projectDir + '/' + assetsDir + '/sass/live.scss');
                                     remove(projectDir + '/' + assetsDir + '/sass/style.scss');
 
-                                    fse.outputFile(projectDir + '/' + assetsDir + '/sass/lib/__lib.scss', '@import "normalize/_normalize.scss";\n@import "susy/sass/_susy.scss";\n@import "bourbon/dist/_bourbon.scss";', function(err) {
-                                        if(err) console.log(err);
-                                    });
-
-                                    fse.outputFile(projectDir + '/' + assetsDir + '/sass/front.scss', '@import "base/__base";\n@import "lib/__lib";\n@import "project/__project";\n@import "specifics/__specifics";', function(err) {
-                                            if(err) console.log(err);
-                                    });
-
-                                    fse.outputFile(projectDir + '/' + assetsDir + '/sass/back.scss', '@import "back/base/__base";\n@import "back/specifics/__specifics";', function(err) {
-                                            if(err) console.log(err);
-                                    });
+                                    writeFile(projectDir + '/' + assetsDir + '/sass/lib/__lib.scss', '@import "normalize/_normalize.scss";\n@import "susy/sass/_susy.scss";\n@import "bourbon/dist/_bourbon.scss";');
+                                    writeFile(projectDir + '/' + assetsDir + '/sass/front.scss', '@import "base/__base";\n@import "lib/__lib";\n@import "project/__project";\n@import "specifics/__specifics";');
+                                    writeFile(projectDir + '/' + assetsDir + '/sass/back.scss', '@import "back/base/__base";\n@import "back/specifics/__specifics";');
 
                                     remove('themosis/htdocs/content/themes/themosis-theme');
 
